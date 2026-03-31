@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+
+    </style>
+
+
+
+    <script>
+//default parameters
+function greet(name="gowtham"){
+    console.log("hello" + name);
+
+}
+
+greet();
+greet("ravi");
+
+//return sattement 
+function add(a,b){
+    return a+b;
+
+}
+console.log(add(5,6));
+
+// 1. Default Parameter + Named Function
+function greet(name = "Guest") {
+    return "Hello " + name;
+}
+console.log(greet());              // Hello Guest
+
+// 2. Return Statement
+function add(a, b) {
+    return a + b;
+}
+console.log(add(2, 3));           // 5
+
+// 3. Anonymous Function + Function Expression
+const multiply = function(a, b) {
+    return a * b;
+};
+console.log(multiply(3, 4));      // 12
+
+// 4. Arrow Function
+const subtract = (a, b) => a - b;
+console.log(subtract(10, 5));     // 5
+
+// 5. IIFE (Immediately Invoked Function)
+(function() {
+    console.log("IIFE executed");
+})(); // IIFE executed
+
+// 6. Callback Function + Higher-Order Function
+function operate(a, b, callback) {
+    return callback(a, b);
+}
+console.log(operate(5, 2, (x, y) => x + y)); // 7
+
+// 7. Constructor Function
+function Person(name) {
+    this.name = name;
+}
+let p1 = new Person("Gowtham");
+console.log(p1.name);             // Gowtham
+
+// 8. Async Function
+async function getData() {
+    return "Async Data";
+}
+getData().then(res => console.log(res)); // Async Data
+
+// 9. Generator Function
+function* numbers() {
+    yield 1;
+    yield 2;
+}
+let gen = numbers();
+console.log(gen.next().value);    // 1
+console.log(gen.next().value);    // 2
+
+// 10. Recursive Function
+function factorial(n) {
+    if (n === 1) return 1;
+    return n * factorial(n - 1);
+}
+console.log(factorial(4));        // 24
+
+// 11. Nested Function
+function outer() {
+    function inner() {
+        return "Inner function";
+    }
+    return inner();
+}
+console.log(outer());             // Inner function
+
+// 12. Pure Function
+function square(n) {
+    return n * n;
+}
+console.log(square(5));           // 25
+
+// 13. Default Parameter Function (again concept)
+function test(x = 10) {
+    return x;
+}
+console.log(test());              // 10
+
+// 14. Rest Parameter Function
+function sum(...nums) {
+    return nums.reduce((a, b) => a + b, 0);
+}
+console.log(sum(1, 2, 3, 4));     // 10
+// 1️⃣ Storing Function in Variable (Function Expression)
+const add = function(a, b) {
+    return a + b;
+};
+console.log("Add:", add(5, 3));   // 8
+
+
+// 2️⃣ Callback Function using Function Expression
+function process(callback) {
+    console.log("Processing...");
+    callback();
+}
+
+process(function() {
+    console.log("Callback executed");
+});
+
+
+// 3️⃣ Simulated addEventListener (Event Handler concept)
+function addEventListener(event, callback) {
+    console.log("Event triggered:", event);
+    callback();
+}
+
+addEventListener("click", function() {
+    console.log("Button clicked!");
+});
+
+
+// 4️⃣ Self-Invoking Function (IIFE)
+(function() {
+    console.log("IIFE runs automatically");
+})();
+
+
+// 5️⃣ Combination Example (All together)
+function main() {
+    console.log("Main function started");
+
+    // Function Expression inside function
+    const multiply = function(x, y) {
+        return x * y;
+    };
+
+    console.log("Multiply:", multiply(2, 3));
+
+    // Callback usage
+    process(function() {
+        console.log("Callback inside main");
+    });
+
+    // Event simulation
+    addEventListener("submit", function() {
+        console.log("Form submitted");
+    });
+}
+
+main();
+
+    </script>
+</body>
+</html>
