@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <style>
+        body {
+    font-family: Arial;
+    text-align: center;
+    margin-top: 40px;
+}
+
+input {
+    padding: 8px;
+    width: 200px;
+}
+
+button {
+    padding: 6px 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+p{
+    background: rgb(106, 255, 0);
+    color: white;
+    border: none;
+    border-radius: 3px;
+}
+
+li {
+    margin: 10px auto;
+    width: 250px;
+    display: flex;
+    justify-content: space-between; /* space between fruit & button */
+    align-items: center;
+    background: #f2f2f2;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+li button {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 3px;
+}
+    </style>
+
+<h3>Fruits List</h3>
+
+<input id="input" type="text" placeholder="Enter fruit">
+<button onclick="addFruit()">Add</button>
+<button onclick="resetList()">Reset</button>
+<p id="empty"> list having some itemsd </p>
+<ul id="list"></ul>
+
+<script>
+let fruits = ["Apple", "Mango"];
+
+let ul = document.getElementById("list");
+
+// Show list
+function showList() {
+    // clear list
+    while (ul.firstChild) {
+        ul.removeChild(ul.firstChild);
+    }
+
+    // add items
+    fruits.forEach(function(fruit, index) {
+        let li = document.createElement("li");
+        li.textContent = fruit;
+
+        let btn = document.createElement("button");
+        btn.textContent = "Delete";
+
+        btn.onclick = function() {
+            fruits.splice(index, 1);
+            showList();
+        };
+
+        li.appendChild(btn);
+        ul.appendChild(li);
+    });
+}
+
+// Add fruit
+function addFruit() {
+    let input = document.getElementById("input").value;
+
+    if (input === "") return;
+
+    fruits.push(input);
+    showList();
+}
+
+// Reset list
+function resetList() {
+    fruits = [""];
+document.querySelector("#empty").textContent= "empty bag";
+document.querySelector("#empty").style.backgroundColor= "red";
+    showList();
+}
+
+// first time load
+showList();
+</script>
+
+</body>
+</html>
