@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+body{
+    text-align: center;
+    align-items: center;
+    font-family: Arial, Helvetica, sans-serif;
+    transition: background-color 0.5s;
+}
+h1{
+    margin-top: 20px;
+}
+.continer{
+    background-color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    padding: 20px;
+    gap: 20px;
+    margin: 40px auto 0;
+    width: 50%;
+    height: 300px;
+}
+.box{
+    display: inline-block;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.red{
+    background-color: red;
+
+}
+.green{
+    background-color: green;
+}
+.blue{
+    background-color: rgb(16, 9, 232);
+}
+.yellow{
+    background-color: yellow;
+}
+</style>
+<body id="gow">
+<h1> random colour genrator</h1>
+<div class="continer">
+    <span class="box red" onclick="change('red')"></span>
+    <span class="box green" onclick="change('green')"></span>
+    <span class="box yellow" onclick="change('yellow')"></span>
+    <span class="box blue" onclick="change('blue')"></span>
+     <p>if you click on color the bakcground will chnage</p>
+</div>
+   
+    <script>
+        function change(color){
+            document.getElementById("gow").style.backgroundColor=color;
+        }
+
+    </script>
+
+    
+</body>
+</html>
