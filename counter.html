@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tally Counter</title>
+
+<style>
+
+body{
+font-family:Arial;
+text-align:center;
+align-items: center;
+height: 100vh;
+display:flex;
+justify-content: center;
+background:url("https://c4.wallpaperflare.com/wallpaper/488/715/793/tally-wallpaper-preview.jpg");
+background-repeat: no-repeat;
+background-position: center;
+background-size: cover;
+margin: 0;
+transition:0.3s;
+}
+.continer{
+    
+
+    background:url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRajh8x5AiMkYRt4PbHepGJBOHmhHh1nn6DSw&s");
+    background-repeat: no-repeat;
+background-position: center;
+background-size: cover;
+    margin-right: 123px;
+    width: 400px;
+    height: 400px;
+    border-radius: 20px;
+    position: relative;
+}
+.dark{
+background:#111;
+color:rgb(197, 22, 22);
+}
+
+h1{
+font-size:60px;
+color:green;
+transition:0.2s ease;
+}
+
+/* Counter Animation */
+
+@keyframes pop{
+0%{transform:scale(1)}
+50%{transform:scale(1.4)}
+100%{transform:scale(1)}
+}
+
+.animate{
+animation:pop 0.2s ease;
+}
+
+/* Button Style */
+
+button{
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
+border:none;
+border-radius:8px;
+border:1px solid rgba(255,255,255,0.2);
+backdrop-filter:blur(8px)
+transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover{
+background:#bbb;
+}
+
+button:active{
+transform:translateY(2px) scale(0.95);
+box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Dark Mode Button */
+
+.dark-toggle{
+position: absolute;
+
+top: 15px;
+right:5px;
+width:20px;
+height:20px;
+display: flex;
+align-items: center;
+justify-content: center;
+border:none;
+background:#222;
+color:white;
+cursor:pointer;
+font-size:18px;
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+transition:0.3s;
+}
+
+.dark-toggle:hover{
+transform:scale(1.1);
+}
+
+</style>
+
+</head>
+
+<body>
+<div class="continer">
+<!-- Dark Mode Button -->
+<button class="dark-toggle" onclick="darkMode()">🌙</button>
+
+<h2>TALLY COUNTER</h2>
+
+<h1 id="counter">0</h1>
+
+<button onclick="decrease()"> ➖ Minus</button>
+<button onclick="increase()"> ➕  Plus</button>
+
+<br><br>
+
+<button onclick="reset()"> 🔄 Reset</button>
+
+</div>
+<script>
+
+let count = 0;
+function playSound(){
+let sound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+sound.play();
+}
+// function plusSound(){
+// let sound = new Audio("https://assets.mixkit.co/active_storage/sfx/1113/1113-preview.mp3");
+// sound.volume = 0.9;
+// sound.play();
+// }
+
+// function minusSound(){
+// let sound = new Audio("https://assets.mixkit.co/active_storage/sfx/1113/1113-preview.mp3");
+// sound.volume = 0.9;
+// sound.play();
+// }
+
+// function resetSound(){
+// let sound = new Audio("https://assets.mixkit.co/active_storage/sfx/1114/1114-preview.mp3");
+// sound.volume = 0.9;
+// sound.play();
+// }
+// function speak(text){
+// let speech = new SpeechSynthesisUtterance(text);
+// speech.volume = 1;
+// speech.rate = 1;
+// speech.pitch = 1;
+// window.speechSynthesis.speak(speech);
+// }
+
+function increase(){
+count++;
+document.getElementById("counter").innerText = count;
+animateCounter();
+playSound();
+}
+
+function decrease(){
+count--;
+document.getElementById("counter").innerText = count;
+animateCounter();
+playSound();
+}
+
+function reset(){
+count = 0;
+document.getElementById("counter").innerText = count;
+animateCounter();
+playSound();
+}
+
+function darkMode(){
+document.body.classList.toggle("dark");
+playSound()
+}
+
+</script>
+
+</body>
+</html>
