@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Final UI with Progress + Sound</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+  }
+
+  /* Progress bar */
+  .progress {
+    width: 80%;
+    height: 18px;
+    background: rgb(255, 255, 255);
+    margin: 30px auto;
+    border-radius: 10px;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+  }
+
+  .fill {
+    height: 100%;
+    width: 0%;
+    background: #fff;
+    transition: width 0.5s ease, background 0.5s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #progressText {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* Container */
+  .container {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px;
+  }
+
+  /* Boxes */
+  .box {
+    width: 260px;
+    height: 220px;
+    border-radius: 15px;
+    padding: 15px;
+
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+    transition: background-color 0.5s ease, transform 0.2s ease;
+  }
+
+  .box:hover {
+    transform: translateY(-5px);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  button {
+    padding: 6px 12px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+
+    background: rgba(255,255,255,0.8);
+    color: #333;
+    font-weight: bold;
+
+    transition: all 0.2s ease;
+  }
+
+  button:hover {
+    background: white;
+    transform: scale(1.05);
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Sound -->
+<audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+<!--Progress Bar -->
+<div class="progress">
+  <div class="fill" id="mainFill">
+    <span id="progressText">0%</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- BOX 1 -->
+  <div class="box" id="box1">
+    <div>Box 1</div>
+
+    <div class="buttons">
+      <button onclick="updateUI('box1','red',20)">20%</button>
+      <button onclick="updateUI('box1','green',50)">50%</button>
+      <button onclick="updateUI('box1','blue',100)">100%</button>
+    </div>
+
+    <button onclick="resetUI('box1')">Reset</button>
+  </div>
+
+  <!-- BOX 2 -->
+  <div class="box" id="box2">
+    <div>Box 2</div>
+
+    <div class="buttons">
+      <button onclick="updateUI('box2','yellow',20)">20%</button>
+      <button onclick="updateUI('box2','pink',50)">50%</button>
+      <button onclick="updateUI('box2','orange',100)">100%</button>
+    </div>
+
+    <button onclick="resetUI('box2')">Reset</button>
+  </div>
+
+</div>
+
+<script>
+  let boxValues = {
+    box1: 0,
+    box2: 0
+  };
+
+  function playSound() {
+    const sound = document.getElementById("clickSound");
+    sound.currentTime = 0;
+    sound.play();
+  }
+
+  function updateUI(boxId, color, percent) {
+    playSound();
+
+    document.getElementById(boxId).style.backgroundColor = color;
+
+    boxValues[boxId] = percent;
+
+    updateBar(color);
+  }
+
+  function resetUI(boxId) {
+    playSound();
+
+    document.getElementById(boxId).style.backgroundColor = "white";
+
+    boxValues[boxId] = 0;
+
+    updateBar("black");
+  }
+
+  function updateBar(color) {
+    const fill = document.getElementById("mainFill");
+    const text = document.getElementById("progressText");
+
+    let maxValue = Math.max(boxValues.box1, boxValues.box2);
+
+    fill.style.width = maxValue + "%";
+    fill.style.backgroundColor = color;
+
+    text.innerText = maxValue + "%";
+  }
+</script>
+
+</body>
+</html>
