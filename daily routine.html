@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Routine Tracker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:Arial;
+  background:url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe') no-repeat center/cover;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.container{
+  width:900px;
+  padding:15px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);
+}
+
+.title{text-align:center;margin-bottom:10px;}
+
+.month-nav{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+
+.month-nav button{
+  background:rgba(255,255,255,0.2);
+  border:none;
+  padding:5px 10px;
+  color:white;
+  cursor:pointer;
+}
+
+/* FLEX MAIN */
+.flex{display:flex;gap:15px;}
+
+/* CALENDAR */
+.calendar{
+  flex:1;
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+
+.day{
+  padding:8px;
+  text-align:center;
+  background:rgba(255,255,255,0.2);
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.day.active{background:#00e676;}
+.day.submitted{background:#555;}
+
+/* ROUTINE */
+.routine{flex:1;}
+.routine div{
+  padding:10px;
+  margin-bottom:8px;
+  background:rgba(255,255,255,0.15);
+  border-radius:6px;
+}
+
+/* ACTIONS */
+.actions{flex:1;}
+
+/* 🔥 TOP SECTION FIX */
+.top-section{
+  display:flex;
+  gap:10px;
+}
+
+/* CHECKBOXES */
+.checkbox-list{
+  flex:1;
+}
+.checkbox-list div{
+  padding:10px;
+}
+
+/* ✅ IMAGE RIGHT SIDE */
+
+.routine-img{
+    background:rgb(255, 255, 255);
+    padding:10px;
+    display:flex;
+    justify-content:center;
+    border-radius:70px;
+}
+.routine-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+/* BOTTOM */
+.bottom-section{
+  margin-top:10px;
+}
+
+/* PROGRESS */
+.progress{
+  background:rgba(255,255,255,0.2);
+  border-radius:20px;
+  overflow:hidden;
+  height:20px;
+}
+.bar{
+  height:100%;
+  width:0%;
+  background:#00e676;
+  text-align:center;
+  font-size:12px;
+}
+
+/* BUTTONS */
+button{
+  margin-top:5px;
+  padding:8px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+.save{background:#00c853;color:white;}
+.submit{background:orange;color:white;}
+
+#msg{text-align:center;margin-top:5px;font-size:13px;}
+
+/* STREAK */
+.streak{text-align:center;margin-top:5px;font-weight:bold;}
+.streak.animate{animation:pop 0.6s ease;}
+@keyframes pop{
+  0%{transform:scale(1);}
+  40%{transform:scale(1.4);color:#00e676;}
+  70%{transform:scale(0.9);}
+  100%{transform:scale(1);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2 class="title">🌟 Daily Routine Tracker</h2>
+
+  <div class="month-nav">
+    <button onclick="changeMonth(-1)">⬅️</button>
+    <span id="monthLabel"></span>
+    <button onclick="changeMonth(1)">➡️</button>
+  </div>
+
+  <div class="flex">
+
+    <!-- CALENDAR -->
+    <div class="calendar" id="cal"></div>
+
+    <!-- ROUTINE -->
+    <div class="routine">
+      <div>🏋️ Gym</div>
+      <div>🎓 Class</div>
+      <div>🍽️ Food</div>
+      <div>📚 Study</div>
+      <div>⚽ Playing</div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+
+      <!-- 🔥 FIXED TOP SECTION -->
+      <div class="top-section">
+
+        <!-- CHECKBOXES -->
+        <div class="checkbox-list">
+          <div><input type="checkbox" data-task="gym"></div>
+          <div><input type="checkbox" data-task="class"></div>
+          <div><input type="checkbox" data-task="food"></div>
+          <div><input type="checkbox" data-task="study"></div>
+          <div><input type="checkbox" data-task="playing"></div>
+        </div>
+
+        <!-- ✅ IMAGE (CORRECT POSITION) -->
+        <div class="routine-img">
+          <img src="https://s7.ezgif.com/tmp/ezgif-75ac64e6dccbd0e4.gif" alt="Routine Image">
+        </div>
+
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="bottom-section">
+        <div class="progress">
+          <div class="bar" id="bar">0%</div>
+        </div>
+
+        <button class="save" onclick="save()">Save</button>
+        <button class="submit" onclick="submitDay()">Submit</button>
+
+        <div id="msg"></div>
+        <div id="streak" class="streak">🔥 Streak: 0 days</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<audio id="sound" src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3"></audio>
+
+<script>
+const cal=document.getElementById("cal");
+const bar=document.getElementById("bar");
+let selected="";
+let prevStreak=0;
+let currentDate=new Date();
+
+/* CALENDAR */
+function genCal(){
+  cal.innerHTML="";
+  let y=currentDate.getFullYear();
+  let m=currentDate.getMonth();
+
+  let names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById("monthLabel").innerText=names[m]+" "+y;
+
+  let days=new Date(y,m+1,0).getDate();
+
+  for(let i=1;i<=days;i++){
+    let date=`${y}-${String(m+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+
+    let div=document.createElement("div");
+    div.className="day";
+    div.innerText=i;
+
+    let saved=localStorage.getItem(date);
+    if(saved && JSON.parse(saved).submitted) div.classList.add("submitted");
+
+    div.onclick=()=>pick(div,date);
+    cal.appendChild(div);
+  }
+}
+
+/* MONTH CHANGE */
+function changeMonth(offset){
+  currentDate.setMonth(currentDate.getMonth()+offset);
+  genCal();
+}
+
+/* PICK */
+function pick(el,date){
+  document.querySelectorAll(".day").forEach(d=>d.classList.remove("active"));
+  el.classList.add("active");
+  selected=date;
+  load();
+}
+
+/* PROGRESS */
+function update(){
+  let c=[...document.querySelectorAll("input")];
+  let done=c.filter(x=>x.checked).length;
+  let p=Math.round(done/c.length*100);
+  bar.style.width=p+"%";
+  bar.innerText=p+"%";
+}
+
+/* SAVE */
+function save(){
+  if(!selected) return alert("Select date");
+  localStorage.setItem(selected,JSON.stringify(getData(false)));
+}
+
+/* SUBMIT */
+function submitDay(){
+  if(!selected) return alert("Select date");
+  let data=getData(true);
+  localStorage.setItem(selected,JSON.stringify(data));
+  lock();
+  show(data);
+  updateStreak();
+}
+
+/* DATA */
+function getData(sub){
+  let c=document.querySelectorAll("input");
+  let obj={submitted:sub},all=true;
+
+  c.forEach(cb=>{
+    obj[cb.dataset.task]=cb.checked;
+    if(!cb.checked) all=false;
+  });
+
+  obj.all=all;
+  return obj;
+}
+
+/* LOAD */
+function load(){
+  let data=JSON.parse(localStorage.getItem(selected)||"{}");
+  let c=document.querySelectorAll("input");
+
+  c.forEach(cb=>cb.checked=data[cb.dataset.task]||false);
+
+  if(data.submitted){lock();show(data);}
+  else unlock();
+
+  update();
+}
+
+/* LOCK */
+function lock(){document.querySelectorAll("input").forEach(x=>x.disabled=true);}
+function unlock(){document.querySelectorAll("input").forEach(x=>x.disabled=false);}
+
+/* MESSAGE */
+function show(d){
+  document.getElementById("msg").innerText=
+    d.all?"🎉 Perfect Day!":"⚠️ Incomplete!";
+}
+
+/* CONFETTI */
+function fire(){
+  confetti({particleCount:120,spread:70,origin:{y:0.6}});
+}
+
+/* SOUND */
+function sound(){
+  let s=document.getElementById("sound");
+  s.currentTime=0;
+  s.play();
+}
+
+/* STREAK */
+function updateStreak(){
+  let keys=Object.keys(localStorage).sort();
+  let streak=0;
+
+  for(let i=keys.length-1;i>=0;i--){
+    let d=JSON.parse(localStorage.getItem(keys[i]));
+    if(d.submitted && d.all) streak++;
+    else break;
+  }
+
+  let el=document.getElementById("streak");
+  el.innerText="🔥 Streak: "+streak+" days";
+
+  if(streak>prevStreak){
+    el.classList.add("animate");
+    fire();
+    sound();
+    setTimeout(()=>el.classList.remove("animate"),600);
+  }
+
+  prevStreak=streak;
+}
+
+document.querySelectorAll("input").forEach(i=>i.onchange=update);
+
+genCal();
+updateStreak();
+</script>
+
+</body>
+</html>
