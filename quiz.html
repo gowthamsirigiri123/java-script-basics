@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz App</title>
+
+<style>
+body {
+  margin:0;
+  font-family:'Segoe UI';
+  background:url('https://www.foundit.in/career-advice/wp-content/uploads/2021/11/HTML-and-CSS-interview-questions.jpg') no-repeat center/cover;
+  height:100vh;
+  color:white;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  width:100%;
+  height:100%;
+    
+  z-index:-1;
+}
+
+.container{
+    background:url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv5l5wyxUdi3PsfhjjVBCY_W3pIZgcOjwMdg&s') no-repeat center/cover;
+  width:380px;
+  margin:auto;
+  margin-top:60px;
+  padding:25px;
+  border-radius:15px;
+  text-align:center;
+  
+  backdrop-filter:blur(10px);
+}
+
+input{
+  padding:10px;
+  width:90%;
+  border:none;
+  border-radius:8px;
+}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:8px;
+  background:#00c9ff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover{ background:#92fe9d; }
+
+.hidden{ display:none !important; }
+
+.options button{
+  width:100%;
+  margin:5px 0;
+  transition:0.3s;
+}
+
+.correct{ background:#28a745 !important; }
+.wrong{ background:#dc3545 !important; }
+
+/* progress */
+.progress{
+  height:12px;
+  background:#444;
+  border-radius:6px;
+  margin-bottom:8px;
+}
+
+.progress-bar{
+  height:12px;
+  width:0%;
+  background:#00ffcc;
+  border-radius:6px;
+  transition:width 0.4s ease;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  color:black;
+  font-weight:bold;
+}
+
+/* counter */
+.counter{
+  font-size:14px;
+  margin-bottom:5px;
+}
+
+/* popup */
+.popup{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.result-card{
+  background:linear-gradient(135deg,#1e3c72,#2a5298);
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  width:320px;
+}
+
+.leader-item{
+  background:rgba(255,255,255,0.1);
+  margin:5px;
+  padding:6px;
+  border-radius:8px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.timer{ margin:5px; }
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Enter Email">
+  <button onclick="login()">Start Quiz</button>
+</div>
+
+<!-- QUIZ -->
+<div class="container hidden" id="quizBox">
+  <div class="progress">
+    <div class="progress-bar" id="progressBar">0%</div>
+  </div>
+
+  <div class="counter" id="counter">Question 1/10</div>
+  <div class="timer">⏳ <span id="time">15</span>s</div>
+
+  <h3 id="questionBox"></h3>
+  <div id="optionsBox" class="options"></div>
+</div>
+
+<!-- RESULT -->
+<div class="popup hidden" id="resultPopup">
+  <div class="result-card">
+    <h1>🎉 Congratulations!</h1>
+    <p id="scoreText"></p>
+
+    <h3>🏆 Leaderboard</h3>
+    <div id="leaderboard"></div>
+
+    <button onclick="restart()">Restart</button>
+  </div>
+</div>
+
+<script>
+
+// initial state
+window.onload = ()=>{
+  loginBox.classList.remove("hidden");
+  quizBox.classList.add("hidden");
+  resultPopup.classList.add("hidden");
+};
+
+// login
+function login(){
+  let email = document.getElementById("email").value;
+  if(!email) return alert("Enter email");
+
+  localStorage.setItem("userEmail", email);
+
+  loginBox.classList.add("hidden");
+  quizBox.classList.remove("hidden");
+
+  loadQuiz();
+}
+
+// questions
+const sets = [[
+{q:"What is the primary purpose of HTML in web development?",a:["Design","Structure content","Database","Animation"],c:1},
+{q:"Which CSS property controls outer spacing?",a:["padding","margin","border","gap"],c:1},
+{q:"Which tag creates a hyperlink?",a:["<link>","<a>","<href>","<nav>"],c:1},
+{q:"Flexbox is used for?",a:["Layout","Color","Font","Image"],c:0},
+{q:"Image tag?",a:["<img>","<pic>","<src>","<image>"],c:0},
+{q:"Change text color?",a:["font","color","bg","paint"],c:1},
+{q:"Head tag role?",a:["Content","Metadata","Buttons","Images"],c:1},
+{q:"Text alignment?",a:["align","text-align","font","center"],c:1},
+{q:"Div is?",a:["Text","Container","Image","Button"],c:1},
+{q:"Flex direction?",a:["flex-direction","display","float","pos"],c:0}
+]];
+
+let quiz=[], index=0, score=0, selected=null;
+let timer, timeLeft=15;
+
+// load
+function loadQuiz(){
+  quiz = sets[0];
+  showQuestion();
+}
+
+// show
+function showQuestion(){
+  let q = quiz[index];
+  questionBox.innerText = q.q;
+
+  counter.innerText = `Question ${index+1}/${quiz.length}`;
+
+  optionsBox.innerHTML="";
+  selected=null;
+
+  q.a.forEach((opt,i)=>{
+    let btn=document.createElement("button");
+    btn.innerText=opt;
+
+    btn.onclick=()=>{
+      if(selected!==null) return;
+
+      selected=i;
+
+      let buttons = optionsBox.querySelectorAll("button");
+
+      buttons.forEach((b,idx)=>{
+        if(idx===q.c) b.classList.add("correct");
+        if(idx===i && i!==q.c) b.classList.add("wrong");
+      });
+
+      setTimeout(nextQuestion,1000);
+    };
+
+    optionsBox.appendChild(btn);
+  });
+
+  updateProgress();
+  startTimer();
+}
+
+// progress with %
+function updateProgress(){
+  let percent = Math.round((index/quiz.length)*100);
+  progressBar.style.width = percent+"%";
+  progressBar.innerText = percent+"%";
+}
+
+// timer
+function startTimer(){
+  clearInterval(timer);
+  timeLeft=15;
+  time.innerText=timeLeft;
+
+  timer=setInterval(()=>{
+    timeLeft--;
+    time.innerText=timeLeft;
+
+    if(timeLeft<=0){
+      clearInterval(timer);
+      nextQuestion();
+    }
+  },1000);
+}
+
+// next
+function nextQuestion(){
+  if(selected===quiz[index].c) score++;
+
+  index++;
+  updateProgress();
+
+  if(index===quiz.length){
+    showResult();
+  } else {
+    showQuestion();
+  }
+}
+
+// result
+function showResult(){
+  quizBox.classList.add("hidden");
+  resultPopup.classList.remove("hidden");
+
+  scoreText.innerText = `Score: ${score}/${quiz.length}`;
+
+  saveScore();
+  showLeaderboard();
+}
+
+// save
+function saveScore(){
+  let email=localStorage.getItem("userEmail");
+  let data=JSON.parse(localStorage.getItem("scores")||"[]");
+
+  data.push({email,score});
+  data.sort((a,b)=>b.score-a.score);
+
+  localStorage.setItem("scores",JSON.stringify(data.slice(0,5)));
+}
+
+// leaderboard
+function showLeaderboard(){
+  let data=JSON.parse(localStorage.getItem("scores")||"[]");
+
+  leaderboard.innerHTML=data.map((d,i)=>
+    `<div class="leader-item">
+      <span>#${i+1} ${d.email}</span>
+      <span>${d.score}</span>
+    </div>`
+  ).join("");
+}
+
+// restart
+function restart(){ location.reload(); }
+
+</script>
+
+</body>
+</html>
